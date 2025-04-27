@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
+import Library from "./pages/Library";
 import Suggestions from "./pages/Suggestions";
 import Sitemap from "./pages/Sitemap";
 import NotFound from "./pages/NotFound";
@@ -24,6 +25,7 @@ const App = () => (
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/library" element={<Library />} />
               <Route path="/suggestions" element={<Suggestions />} />
               <Route path="/sitemap" element={<Sitemap />} />
               <Route path="*" element={<NotFound />} />
