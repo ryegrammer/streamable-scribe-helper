@@ -112,7 +112,8 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
   useEffect(() => {
     return () => {
       if (isStreaming) {
-        disconnectFromStream();
+        // No need for disconnectFromStream since we're just updating UI state
+        setIsStreaming(false);
       }
     };
   }, [isStreaming]);
