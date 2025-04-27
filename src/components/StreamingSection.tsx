@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { connectToStream, disconnectFromStream } from '@/lib/streamingUtils';
+import { initCamera, startPreview } from '@/lib/cameraUtils';
 
 interface StreamingSectionProps {
   onRecordingChange?: (isRecording: boolean) => void;
@@ -21,14 +21,26 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  // Simulate connection to Raspberry Pi
+  useEffect(() => {
+    const setupCamera = async () => {
+      const initialized = await initCamera();
+      if (!initialized) {
+        toast({
+          title: "Camera Error",
+          description: "Failed to initialize camera. Please check permissions.",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    setupCamera();
+  }, [toast]);
+
   const toggleStream = async () => {
     if (isStreaming) {
-      // Disconnect from stream
+      // Stop streaming
       setIsLoading(true);
-      
       try {
-        await disconnectFromStream();
         setConnectionStatus('disconnected');
         setIsLoading(false);
         setIsStreaming(false);
@@ -45,35 +57,35 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
         console.error('Failed to disconnect:', error);
         toast({
           title: "Connection error",
-          description: "Failed to disconnect from stream",
+          description: "Failed to disconnect camera stream",
           variant: "destructive"
         });
         setIsLoading(false);
       }
     } else {
-      // Connect to stream
+      // Start streaming
       setIsLoading(true);
       setConnectionStatus('connecting');
       
       try {
-        await connectToStream(streamQuality);
+        const previewUrl = await startPreview();
+        if (videoRef.current && previewUrl) {
+          videoRef.current.src = previewUrl;
+        }
+        
         setConnectionStatus('connected');
         setIsLoading(false);
         setIsStreaming(true);
         
-        // Simulate video stream by adding source to video element
-        if (videoRef.current) {
-          // In a real app, you would set the actual stream source here
-          toast({
-            title: "Stream connected",
-            description: `Connected to Raspberry Pi 5 stream (${streamQuality} quality)`,
-          });
-        }
+        toast({
+          title: "Camera connected",
+          description: `Stream started (${streamQuality} quality)`,
+        });
       } catch (error) {
         console.error('Failed to connect:', error);
         toast({
           title: "Connection error",
-          description: "Failed to connect to Raspberry Pi stream",
+          description: "Failed to start camera stream",
           variant: "destructive"
         });
         setConnectionStatus('disconnected');
