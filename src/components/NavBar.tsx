@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ThemeToggle from '@/components/ThemeToggle';
 
 const NavBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -61,6 +62,7 @@ const NavBar = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-1">
+          <ThemeToggle />
           {navLinks.map(link => {
             if (link.dropdownItems) {
               return (
@@ -118,6 +120,9 @@ const NavBar = () => {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 glass-panel animate-slide-in py-4">
+          <div className="flex justify-center mb-4">
+            <ThemeToggle />
+          </div>
           <nav className="flex flex-col space-y-1 px-6">
             {navLinks.map(link => {
               if (link.dropdownItems) {
