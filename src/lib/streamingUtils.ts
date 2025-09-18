@@ -91,7 +91,15 @@ export const stopRecording = async (recordingId: string): Promise<{
 };
 
 // This function would be implemented to fetch a list of saved recordings
-export const getSavedRecordings = async (): Promise<any[]> => {
+interface SavedRecording {
+  id: number;
+  name: string;
+  date: string;
+  duration: string;
+  size: string;
+}
+
+export const getSavedRecordings = async (): Promise<SavedRecording[]> => {
   // This would fetch from a database or file system in a real application
   return [
     { id: 1, name: 'Science Lesson 1', date: '2023-06-15', duration: '34:21', size: '720p' },

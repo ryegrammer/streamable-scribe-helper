@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  pi-camera-app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pi
+    container_name: pi-camera-webapp
+    ports:
+      - "80:80"      # Web application
+      - "8080:8080"  # Camera WebSocket server
+    devices:
+      - "/dev/video0:/dev/video0"  # Camera device
+    privileged: true  # Required for camera access
+    volumes:
+      - camera_recordings:/var/recordings
+      - /opt/vc:/opt/vc  # VideoCore libraries
+    environment:
+      - NODE_ENV=production
+      - CAMERA_DEVICE=/dev/video0
+      - RECORDING_PATH=/var/recordings
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/camera/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  camera_recordings:
+    driver: local

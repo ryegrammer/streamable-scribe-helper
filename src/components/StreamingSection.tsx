@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { initCamera, startPreview } from '@/lib/cameraUtils';
+import { initPiCamera, startPiCameraStream, stopPiCameraStream, getCameraStatus } from '@/lib/piCameraUtils';
 
 interface StreamingSectionProps {
   onRecordingChange?: (isRecording: boolean) => void;
@@ -23,16 +23,16 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
 
   useEffect(() => {
     const setupCamera = async () => {
-      const initialized = await initCamera();
+      const initialized = await initPiCamera();
       if (!initialized) {
         toast({
-          title: "Camera Error",
-          description: "Failed to initialize camera. Please check permissions.",
+          title: "Pi Camera Error",
+          description: "Failed to initialize Pi camera. Check connection and permissions.",
           variant: "destructive"
         });
       }
     };
-    
+
     setupCamera();
   }, [toast]);
 
@@ -41,10 +41,11 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
       // Stop streaming
       setIsLoading(true);
       try {
+        await stopPiCameraStream();
         setConnectionStatus('disconnected');
         setIsLoading(false);
         setIsStreaming(false);
-        
+
         if (isRecording) {
           setIsRecording(false);
           onRecordingChange?.(false);
@@ -57,7 +58,7 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
         console.error('Failed to disconnect:', error);
         toast({
           title: "Connection error",
-          description: "Failed to disconnect camera stream",
+          description: "Failed to disconnect Pi camera stream",
           variant: "destructive"
         });
         setIsLoading(false);
@@ -66,26 +67,30 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
       // Start streaming
       setIsLoading(true);
       setConnectionStatus('connecting');
-      
+
       try {
-        const previewUrl = await startPreview();
-        if (videoRef.current && previewUrl) {
-          videoRef.current.src = previewUrl;
+        if (videoRef.current) {
+          const streamUrl = await startPiCameraStream(videoRef.current, streamQuality);
+          if (streamUrl) {
+            setConnectionStatus('connected');
+            setIsLoading(false);
+            setIsStreaming(true);
+
+            toast({
+              title: "Pi Camera connected",
+              description: `Stream started (${streamQuality} quality)`,
+            });
+          } else {
+            throw new Error('Failed to get stream URL');
+          }
+        } else {
+          throw new Error('Video element not found');
         }
-        
-        setConnectionStatus('connected');
-        setIsLoading(false);
-        setIsStreaming(true);
-        
-        toast({
-          title: "Camera connected",
-          description: `Stream started (${streamQuality} quality)`,
-        });
       } catch (error) {
         console.error('Failed to connect:', error);
         toast({
           title: "Connection error",
-          description: "Failed to start camera stream",
+          description: "Failed to start Pi camera stream",
           variant: "destructive"
         });
         setConnectionStatus('disconnected');
@@ -193,7 +198,7 @@ const StreamingSection: React.FC<StreamingSectionProps> = ({ onRecordingChange }
           <select
             className="px-3 py-2 rounded-md text-sm bg-background border border-border"
             value={streamQuality}
-            onChange={(e) => setStreamQuality(e.target.value as any)}
+            onChange={(e) => setStreamQuality(e.target.value as 'auto' | 'high' | 'medium' | 'low')}
             disabled={isStreaming || isLoading}
           >
             <option value="auto">Auto Quality</option>

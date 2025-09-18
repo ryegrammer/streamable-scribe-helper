@@ -8,7 +8,7 @@ const ThemeToggle = () => {
 
   useEffect(() => {
     initializeTheme();
-  }, []);
+  }, [initializeTheme]);
 
   return (
     <button
