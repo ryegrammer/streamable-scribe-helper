@@ -19,7 +19,7 @@ export type Database = {
           action: string
           admin_user_id: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_value: Json | null
           old_value: Json | null
           target_user_id: string
@@ -30,7 +30,7 @@ export type Database = {
           action: string
           admin_user_id: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_value?: Json | null
           old_value?: Json | null
           target_user_id: string
@@ -41,7 +41,7 @@ export type Database = {
           action?: string
           admin_user_id?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_value?: Json | null
           old_value?: Json | null
           target_user_id?: string
@@ -906,6 +906,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_shattered_core_quiz_questions: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -913,10 +914,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      increment_story_views: {
-        Args: { story_id: string }
-        Returns: undefined
-      }
+      increment_story_views: { Args: { story_id: string }; Returns: undefined }
       insert_system_advice: {
         Args: {
           p_ai_advice_description?: string
@@ -932,10 +930,7 @@ export type Database = {
         }
         Returns: string
       }
-      is_current_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_current_user_admin: { Args: never; Returns: boolean }
       log_admin_action: {
         Args: {
           p_action: string
