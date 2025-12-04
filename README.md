@@ -5,17 +5,7 @@ A streaming website for Raspberry Pi 5 that streams live content from the device
 ## Quick Start (Raspberry Pi)
 
 ```sh
-# Clone the repository
-git clone https://github.com/ryegrammer/real-ass-news.git
-cd real-ass-news
-
-# Install dependencies and build
-npm install
-npm run build
-
-# Run with Docker
-cd docker
-docker-compose -f docker-compose.pi.yml up -d
+git clone https://github.com/ryegrammer/real-ass-news.git && cd real-ass-news && npm install && npm run build && cd docker && docker-compose -f docker-compose.pi.yml up -d
 ```
 
 ## Access Points
@@ -28,15 +18,7 @@ After deployment, access:
 ## Local Development
 
 ```sh
-# Clone the repository
-git clone https://github.com/ryegrammer/real-ass-news.git
-cd real-ass-news
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
+git clone https://github.com/ryegrammer/real-ass-news.git && cd real-ass-news && npm install && npm run dev
 ```
 
 ## Technologies
